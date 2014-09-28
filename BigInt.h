@@ -57,6 +57,7 @@ class BigInt
 	// Other Useful Functions
 	friend BigInt gcd(BigInt, BigInt);
 	friend BigInt pow(BigInt, int);
+	friend BigInt factorial(long long);
 	friend BigInt abs(BigInt);
 	friend BigInt min(BigInt, BigInt);
 	friend BigInt max(BigInt, BigInt);
@@ -642,6 +643,21 @@ BigInt pow(BigInt a, int b) // BigInt power int
 	ret.sign=true;
 	
 	return ret;
+}
+
+BigInt factorial(long long x) //Must fit in long long
+{
+	BigInt fact(1);
+	
+	if(x==0 || x==1)
+	return fact;
+	
+	for(int i=x; i>=1; i--)
+	{
+		fact*=i;
+	}
+	
+	return fact;
 }
 
 BigInt abs(BigInt x) // Absolute Value
