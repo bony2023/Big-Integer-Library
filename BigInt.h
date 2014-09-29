@@ -303,42 +303,66 @@ BigInt BigInt::operator +(const BigInt& x) //Addition
 			ret.sign=false;
 		}
 
-        	a=(char*)(*this).Number.c_str();
-        	b=(char*)x.Number.c_str();
-        	reverse(a, a+strlen(a));
-        	reverse(b, b+strlen(b));
+        a=(char*)A.Number.c_str();
+        b=(char*)B.Number.c_str();
+        reverse(a, a+strlen(a));
+        reverse(b, b+strlen(b));
+        
+    	const int f_len=strlen(a);
+    	const int s_len=strlen(b);
+    	const int vysledek_len=strlen(C);
+    	const int null=0;
+	
+    	int max_len;
+    	if(s_len<(f_len + null))
+    	max_len=f_len + null;
+    	else
+    	max_len=s_len;
+	
+    	int s_idx = 0, f_idx = 0;
+    	int last = 0, idx_null = null;
+    	int nula = -1, n;
+	
+    	while (f_idx < max_len)
+    	{
+    		n = ((s_len > s_idx) ?     (b[s_idx] - '0') : 0) + ((idx_null > 0) ?     0 : ((f_len > f_idx) ? (a[f_idx] - '0') :     0)) + last;
 		
-		int sz=max(strlen(a), strlen(b));
-		int x, y, sum;
-		
-		for(int i=0; i<sz; i++)
-		{
-			if(i<strlen(a))
-			x=a[i]-'0';
-			else
-			x=0;
+    		if (n > 9)
+    		{
+    			last = 1;
+    			n -= 10;
+    		}
+    		else
+    			last = 0;
 			
-			if(i<strlen(b))
-			y=b[i]-'0';
-			else
-			y=0;
-			
-			sum=x+y+carry;
-			
-			C[i]=(sum%10)+'0';
-			carry=sum/10;
-		}
+    		C[s_idx] = n + '0';
 		
-		if(carry)
-		C[sz]=carry+'0', sz++;
-		
-		reverse(C, C+sz);
-		C[sz]='\0';
+    		if (!n && s_idx > 0)
+    		{
+    			if (nula == -1)
+    				nula = s_idx;
+    		}
+    		else
+    			nula = -1;
+    		++s_idx;
+    		if (idx_null-- <= 0)
+    			++f_idx;
+    	}
+    	if (last)
+    	{
+    		C[s_idx++] = '1';
+    		nula = -1;
+    	}
+    	if (nula > 0)
+    		s_idx = nula;
+    	C[s_idx] = '\0';
+    	
+    	reverse(C, C+strlen(C));
 		ret.Number=string(C);
-		
 		reverse(a, a+strlen(a));
-        	reverse(b, b+strlen(b));
+        reverse(b, b+strlen(b));
 	}
+	
 	else if((*this).Number==x.Number)
 	{
 		ret.sign=false;
@@ -354,17 +378,17 @@ BigInt BigInt::operator +(const BigInt& x) //Addition
 			{
 				ret.sign=true;
 				a=(char*)A.Number.c_str();
-                        	b=(char*)B.Number.c_str();
-                        	reverse(a, a+strlen(a));
-                        	reverse(b, b+strlen(b));
+                b=(char*)B.Number.c_str();
+            	reverse(a, a+strlen(a));
+            	reverse(b, b+strlen(b));
 			}
 			else
 			{
 				ret.sign=false;
-        	        	a=(char*)B.Number.c_str();
-                        	b=(char*)A.Number.c_str();
-                        	reverse(a, a+strlen(a));
-                        	reverse(b, b+strlen(b));
+         	   a=(char*)B.Number.c_str();
+            	b=(char*)A.Number.c_str();
+            	reverse(a, a+strlen(a));
+                reverse(b, b+strlen(b));
 			}
 			
 			A.sign=true;
@@ -377,70 +401,66 @@ BigInt BigInt::operator +(const BigInt& x) //Addition
 			{
 				ret.sign=true;
 	    
-	                	a=(char*)B.Number.c_str();
-                        	b=(char*)A.Number.c_str();
-                        	reverse(a, a+strlen(a));
-                        	reverse(b, b+strlen(b));
+	            a=(char*)B.Number.c_str();
+	            b=(char*)A.Number.c_str();
+                reverse(a, a+strlen(a));
+                reverse(b, b+strlen(b));
 			}
 			else
 			{
 				ret.sign=false;
-        	        	a=(char*)A.Number.c_str();
-                        	b=(char*)B.Number.c_str();
-                        	reverse(a, a+strlen(a));
-                        	reverse(b, b+strlen(b));
+         	   a=(char*)A.Number.c_str();
+            	b=(char*)B.Number.c_str();
+            	reverse(a, a+strlen(a));
+                reverse(b, b+strlen(b));
 			}
 		}
 		
-		int sz=max(strlen(a), strlen(b));
-		int x, y, diff;
-		bool borrow=false;
+		int max_len;
+    	int f_len=strlen(a);
+    	int s_len=strlen(b);
+	
+    	if(s_len < f_len)
+    	max_len=f_len;
+    	else
+    	max_len=s_len;
+	
+    	int idx = -1, last = 0, null_idx = -1;
+    	int n;
+	
+    	while (++idx < max_len)
+    	{
+    		n = (a[idx] - '0') - ((s_len > idx) ? (b[idx] - '0') : 0) - last;
 		
-		for(int i=0; i<sz; i++)
-		{
-			if(i<strlen(a))
-			x=a[i]-'0';
-			else
-			x=0;
+    		if (n < 0)
+    		{
+    			last = 1;
+    			n += 10;
+    		}
+		
+    		else
+    			last = 0;
 			
-			if(i<strlen(b))
-			y=b[i]-'0';
-			else
-			y=0;
-			
-			if(borrow)
-			{
-				x--;
-			}
-			
-			if(x>=y)
-			{
-				diff=x-y;
-				borrow=false;
-			}
-			else
-			{
-				x+=10;
-				diff=x-y;
-				borrow=true;
-			}
-			
-			C[i]=diff+'0';
-		}
+    		C[idx] = n + '0';
 		
-		reverse(C, C+sz);
-		C[sz]='\0';
+    		if (!n && idx > 0)
+    		{
+    			if (null_idx == -1)
+    				null_idx = idx;
+    		}
+    		else
+    			null_idx = -1;
+    	}
+    	if (null_idx > 0)
+    		idx = null_idx;
 		
-		if(C[0]>a[0])
-		C[0]='0';
-		
-		ret.Number=string(C);
-		
-		while(ret.Number[0]=='0')
-		ret.Number.erase(0, 1);
+    	C[idx] = '\0';
+    	
+    	reverse(C, C+strlen(C));
+    	ret.Number=string(C);
 		
 		reverse(a, a+strlen(a));
-                reverse(b, b+strlen(b));
+        reverse(b, b+strlen(b));
 	}
 	
 	return ret;
